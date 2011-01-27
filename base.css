@@ -1,7 +1,36 @@
+* {
+    margin: 0;
+}
+html, body {
+    height: 100%;
+}
 body {
     font-family: Arial, Verdana, sans-serif;
     background: #abb;
 }
 h1 {
     color: #bc1d00;
+    padding: 10px;
+}
+footer {
+    clear: both;
+    height: 4em;
+    text-align: center;
+    font-size: 12px;
+}
+.col-left {
+    width: 50%;
+    border-right: thin solid grey;
+    padding-left: 10px;
+}
+.col-right {
+    width: 48%;
+    float: right;
+}
+#content {
+    min-height: 100%;
+    height: 100%;
+    /* Fix the height for IE6 */
+    height: auto !important;
+    margin: 0 auto -4em;
 }

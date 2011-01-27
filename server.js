@@ -33,6 +33,9 @@
     console.log(req.body);
     return res.send();
   });
+  server.get('/about', function(req, res) {
+    return res.render('about.html');
+  });
   server.listen(PORT, HOST);
   sys.puts("Server running at " + HOST + ":" + PORT);
 }).call(this);

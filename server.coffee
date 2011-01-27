@@ -41,5 +41,8 @@ server.post '/', (req, res) ->
   console.log req.body
   res.send()
 
+server.get '/about', (req, res) ->
+  res.render 'about.html'
+
 server.listen PORT, HOST
 sys.puts "Server running at #{HOST}:#{PORT}"
