@@ -7,7 +7,7 @@ fs = require "fs"
 # Third party
 require.paths.push '/usr/local/lib/node'
 express = require 'express'
-jqtpl = require 'jqtpl'
+jade = require 'jade'
 
 # Globals
 HOST = "localhost"
@@ -16,33 +16,48 @@ SITE_ROOT = process.cwd() + '/'
 
 server = express.createServer()
 
-# Configure the dev environment
-# Add all middleware options here
-server.configure 'development', ->
+## Configure server and middleware options
+
+server.configure ->
+  server.set 'views', __dirname
+  server.set 'partials', __dirname
+  server.set 'view engine', 'jade'
   server.use express.logger()
+  # For parsing request bodies (form POSTs, etc.)
+  server.use express.bodyDecoder()
+  # Must come after bodyDecoder
+  server.use express.methodOverride()
+  # Static media directory
+  server.use express.staticProvider __dirname
+  server.use server.router
+
+server.configure 'development', ->
   # Show verbose page errors
   server.use express.errorHandler {
     dumpExceptions: true,
-    showStack: true}
-  # For parsing request bodies (form POSTs, etc.)
-  server.use express.bodyDecoder()
-  # Static media directory
-  server.use express.staticProvider __dirname
+    showStack: true
+  }
 
-server.set 'views', __dirname
-server.set 'view engine', 'html'
-server.register '.html', jqtpl
-server.set 'view options', {'layout': false}
+server.configure 'production', ->
+  express.errorHandler()
+
+## Routes
 
 server.get '/', (req, res) ->
-  res.render 'home.html'
-
-server.post '/', (req, res) ->
-  console.log req.body
-  res.send()
+  res.render 'about',
+    locals: {
+      title: 'Home',
+      content: res.partial 'home'
+    }
 
 server.get '/about', (req, res) ->
-  res.render 'about.html'
+  res.render 'layout',
+    locals: {
+      title: 'About',
+      content: res.partial 'about'
+    }
+
+## Start the server
 
 server.listen PORT, HOST
 sys.puts "Server running at #{HOST}:#{PORT}"
