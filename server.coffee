@@ -44,7 +44,7 @@ server.configure 'production', ->
 ## Routes
 
 server.get '/', (req, res) ->
-  res.render 'about',
+  res.render 'layout',
     locals: {
       title: 'Home',
       content: res.partial 'home'

@@ -31,7 +31,7 @@
     return express.errorHandler();
   });
   server.get('/', function(req, res) {
-    return res.render('about', {
+    return res.render('layout', {
       locals: {
         title: 'Home',
         content: res.partial('home')
