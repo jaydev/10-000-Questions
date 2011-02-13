@@ -8,6 +8,8 @@ fs = require "fs"
 require.paths.push '/usr/local/lib/node'
 express = require 'express'
 jade = require 'jade'
+mongoose = require 'mongoose'
+mongoStore = require 'connect-mongodb'
 
 # Globals
 HOST = "localhost"
@@ -25,6 +27,8 @@ server.configure ->
   server.use express.logger()
   # For parsing request bodies (form POSTs, etc.)
   server.use express.bodyDecoder()
+  # These must come after bodyDecoder and before methodOverride
+  server.use express.cookieDecoder()
   # Must come after bodyDecoder
   server.use express.methodOverride()
   # Static media directory
@@ -36,6 +40,14 @@ server.configure 'development', ->
   server.use express.errorHandler {
     dumpExceptions: true,
     showStack: true
+  }
+  # Use MongoDB as a session store
+  server.use express.session {
+    key: 'a key',
+    secret: 'secrets are no fun!'
+    store: mongoStore {
+      dbname: 'test'
+    }
   }
 
 server.configure 'production', ->

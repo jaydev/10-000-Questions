@@ -1,5 +1,5 @@
 (function() {
-  var HOST, PORT, SITE_ROOT, express, fs, jade, path, server, sys, url;
+  var HOST, PORT, SITE_ROOT, express, fs, jade, mongoStore, mongoose, path, server, sys, url;
   sys = require("sys");
   url = require("url");
   path = require("path");
@@ -7,6 +7,8 @@
   require.paths.push('/usr/local/lib/node');
   express = require('express');
   jade = require('jade');
+  mongoose = require('mongoose');
+  mongoStore = require('connect-mongodb');
   HOST = "localhost";
   PORT = "8080";
   SITE_ROOT = process.cwd() + '/';
@@ -17,14 +19,22 @@
     server.set('view engine', 'jade');
     server.use(express.logger());
     server.use(express.bodyDecoder());
+    server.use(express.cookieDecoder());
     server.use(express.methodOverride());
     server.use(express.staticProvider(__dirname));
     return server.use(server.router);
   });
   server.configure('development', function() {
-    return server.use(express.errorHandler({
+    server.use(express.errorHandler({
       dumpExceptions: true,
       showStack: true
+    }));
+    return server.use(express.session({
+      key: 'a key',
+      secret: 'secrets are no fun!',
+      store: mongoStore({
+        dbname: 'test'
+      })
     }));
   });
   server.configure('production', function() {
