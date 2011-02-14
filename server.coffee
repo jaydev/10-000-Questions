@@ -1,4 +1,5 @@
 # Node standard libraries
+crypto = require 'crypto'
 sys = require "sys"
 url = require "url"
 path = require "path"
@@ -41,17 +42,58 @@ server.configure 'development', ->
     dumpExceptions: true,
     showStack: true
   }
+  db_url = 'mongodb://localhost:27017/test'
   # Use MongoDB as a session store
   server.use express.session {
     key: 'a key',
     secret: 'secrets are no fun!'
     store: mongoStore {
-      dbname: 'test'
+      url: db_url
     }
   }
+  mongoose.connect(db_url)
 
 server.configure 'production', ->
   express.errorHandler()
+
+## Helpers
+
+loadUser = (req, res, next) ->
+  if req.session.user_id
+    User.findById req.session.user_id, (user) ->
+      if user
+        req.currentUser = user
+        next()
+      else
+        res.redirect '/sessions/new'
+  else
+      res.redirect '/sessions/new'
+
+## Models
+
+mongoose.model 'User', {
+  indexes: [
+      [{ email: 1 }, { unique: true }]
+  ],
+
+  setters: {
+    password: (password) ->
+      this._password = password
+      this.salt = this.makeSalt()
+      this.hashed_password = this.encryptPassword(password)
+  },
+
+  methods: {
+    encryptPassword: (password) ->
+      return crypto.createHmac('sha1', this.salt).update(password).digest('hex')
+
+    authenticate: (plainText) ->
+      return this.encryptPassword(plainText) is this.hashed_password
+
+    makeSalt: ->
+      return Math.round(new Date().valueOf() * Math.random()) + ''
+  }
+}
 
 ## Routes
 
@@ -59,15 +101,18 @@ server.get '/', (req, res) ->
   res.render 'layout',
     locals: {
       title: 'Home',
-      content: res.partial 'home'
+      content: res.partial('home')
     }
 
 server.get '/about', (req, res) ->
   res.render 'layout',
     locals: {
       title: 'About',
-      content: res.partial 'about'
+      content: res.partial('about')
     }
+
+#server.get '/dashboard', loadUser, (req, res) ->
+
 
 ## Start the server
 
