@@ -71,29 +71,32 @@ loadUser = (req, res, next) ->
 
 ## Models
 
-mongoose.model 'User', {
-  indexes: [
-      [{ email: 1 }, { unique: true }]
-  ],
-
-  setters: {
-    password: (password) ->
-      this._password = password
-      this.salt = this.makeSalt()
-      this.hashed_password = this.encryptPassword(password)
+User = new mongoose.Schema {
+  email: {
+    type: String,
+    unique: true,
+    set: this.toLower
   },
-
-  methods: {
-    encryptPassword: (password) ->
-      return crypto.createHmac('sha1', this.salt).update(password).digest('hex')
-
-    authenticate: (plainText) ->
-      return this.encryptPassword(plainText) is this.hashed_password
-
-    makeSalt: ->
-      return Math.round(new Date().valueOf() * Math.random()) + ''
+  hashed_password: {
+    type: String,
+    set: this.encryptPassword
   }
+  salt: String
 }
+
+User.method 'toLower', (email) ->
+  return email.toLowerCase()
+
+User.method 'authenticate', (plainText) ->
+  return this.encryptPassword(plainText) is this.hashed_password
+
+User.method 'makeSalt', ->
+  return Math.round(new Date().valueOf() * Math.random()) + ''
+
+User.method 'encryptPassword', (password) ->
+  return crypto.createHmac('sha1', this.salt).update(password).digest('hex')
+
+mongoose.model('User', User)
 
 ## Routes
 

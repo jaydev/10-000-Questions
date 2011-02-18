@@ -1,5 +1,5 @@
 (function() {
-  var HOST, PORT, SITE_ROOT, crypto, express, fs, jade, loadUser, mongoStore, mongoose, path, server, sys, url;
+  var HOST, PORT, SITE_ROOT, User, crypto, express, fs, jade, loadUser, mongoStore, mongoose, path, server, sys, url;
   crypto = require('crypto');
   sys = require("sys");
   url = require("url");
@@ -58,35 +58,31 @@
       return res.redirect('/sessions/new');
     }
   };
-  mongoose.model('User', {
-    indexes: [
-      [
-        {
-          email: 1
-        }, {
-          unique: true
-        }
-      ]
-    ],
-    setters: {
-      password: function(password) {
-        this._password = password;
-        this.salt = this.makeSalt();
-        return this.hashed_password = this.encryptPassword(password);
-      }
+  User = new mongoose.Schema({
+    email: {
+      type: String,
+      unique: true,
+      set: this.toLower
     },
-    methods: {
-      encryptPassword: function(password) {
-        return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
-      },
-      authenticate: function(plainText) {
-        return this.encryptPassword(plainText) === this.hashed_password;
-      },
-      makeSalt: function() {
-        return Math.round(new Date().valueOf() * Math.random()) + '';
-      }
-    }
+    hashed_password: {
+      type: String,
+      set: this.encryptPassword
+    },
+    salt: String
   });
+  User.method('toLower', function(email) {
+    return email.toLowerCase();
+  });
+  User.method('authenticate', function(plainText) {
+    return this.encryptPassword(plainText) === this.hashed_password;
+  });
+  User.method('makeSalt', function() {
+    return Math.round(new Date().valueOf() * Math.random()) + '';
+  });
+  User.method('encryptPassword', function(password) {
+    return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
+  });
+  mongoose.model('User', User);
   server.get('/', function(req, res) {
     return res.render('layout', {
       locals: {
