@@ -1,9 +1,9 @@
 # Node standard libraries
 crypto = require 'crypto'
-sys = require "sys"
-url = require "url"
-path = require "path"
-fs = require "fs"
+sys = require 'sys'
+url = require 'url'
+path = require 'path'
+fs = require 'fs'
 
 # Third party
 require.paths.push '/usr/local/lib/node'
@@ -12,9 +12,11 @@ jade = require 'jade'
 mongoose = require 'mongoose'
 mongoStore = require 'connect-mongodb'
 
+models = require './models'
+
 # Globals
-HOST = "localhost"
-PORT = "8080"
+HOST = 'localhost'
+PORT = '8080'
 SITE_ROOT = process.cwd() + '/'
 
 server = express.createServer()
@@ -38,20 +40,19 @@ server.configure ->
 
 server.configure 'development', ->
   # Show verbose page errors
-  server.use express.errorHandler {
-    dumpExceptions: true,
+  server.use express.errorHandler
+    dumpExceptions: true
     showStack: true
-  }
+
+  # Connect to database `test`
   db_url = 'mongodb://localhost:27017/test'
   # Use MongoDB as a session store
-  server.use express.session {
+  server.use express.session
     key: 'a key',
     secret: 'secrets are no fun!'
-    store: mongoStore {
+    store: mongoStore
       url: db_url
-    }
-  }
-  mongoose.connect(db_url)
+  mongoose.connect db_url
 
 server.configure 'production', ->
   express.errorHandler()
@@ -69,53 +70,21 @@ loadUser = (req, res, next) ->
   else
       res.redirect '/sessions/new'
 
-## Models
-
-User = new mongoose.Schema {
-  email: {
-    type: String,
-    unique: true,
-    set: this.toLower
-  },
-  hashed_password: {
-    type: String,
-    set: this.encryptPassword
-  }
-  salt: String
-}
-
-User.method 'toLower', (email) ->
-  return email.toLowerCase()
-
-User.method 'authenticate', (plainText) ->
-  return this.encryptPassword(plainText) is this.hashed_password
-
-User.method 'makeSalt', ->
-  return Math.round(new Date().valueOf() * Math.random()) + ''
-
-User.method 'encryptPassword', (password) ->
-  return crypto.createHmac('sha1', this.salt).update(password).digest('hex')
-
-mongoose.model('User', User)
-
 ## Routes
 
 server.get '/', (req, res) ->
   res.render 'layout',
-    locals: {
-      title: 'Home',
-      content: res.partial('home')
-    }
+    locals:
+      title: 'Home'
+      content: res.partial 'home'
 
 server.get '/about', (req, res) ->
   res.render 'layout',
-    locals: {
+    locals:
       title: 'About',
-      content: res.partial('about')
-    }
+      content: res.partial 'about'
 
 #server.get '/dashboard', loadUser, (req, res) ->
-
 
 ## Start the server
 
