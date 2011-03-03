@@ -1,0 +1,16 @@
+:javascript
+  | $(function() {
+  |     $('input#save').click(function() {
+  |         $.post(
+  |             '/flashcards',
+  |             {answer: $('#answer').val()},
+  |             function(data) {
+  |                 $('#actions').html(data);
+  |             }
+  |         );
+  |         return false;
+  |     });
+  | });
+h1 Flashcards
+div#actions
+  != flashcard_content

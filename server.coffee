@@ -86,6 +86,18 @@ server.get '/about', (req, res) ->
 
 #server.get '/dashboard', loadUser, (req, res) ->
 
+server.get '/flashcards', (req, res) ->
+  res.render 'layout',
+    locals:
+      title: 'Flashcards',
+      content: res.partial 'flashcards'
+        object: res.partial 'answer'
+        as: 'flashcard_content'
+
+server.post '/flashcards', (req, res) ->
+  res.render 'rate',
+    layout: false
+
 ## Start the server
 
 server.listen PORT, HOST
