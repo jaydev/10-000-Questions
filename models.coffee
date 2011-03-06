@@ -1,5 +1,8 @@
 mongoose = require 'mongoose'
 
+######################
+# User
+######################
 User = new mongoose.Schema
   email:
     type: String
@@ -26,23 +29,35 @@ User.method 'makeSalt', ->
 User.method 'encryptPassword', (password) ->
   return crypto.createHmac('sha1', this.salt).update(password).digest('hex')
 
+######################
+# Stack
+######################
 Stack = new mongoose.Schema
   # order in which to show stacks
   next_appearance: Number
   flashcards: [Flashcard]
 
+######################
+# Flashcard
+######################
 Flashcard = new mongoose.Schema
   # Foreign key to question
   question: String
   # answers are embedded documents
   answers: [Answer]
 
+######################
+# Answer
+######################
 Answer = new mongoose.Schema
   # how the user rated his response
   rating: Number
   # answer text (not sure how this will be formatted for matching)
   answer: String
 
+######################
+# Question
+######################
 Question = new mongoose.Schema
   # question text
   question: String
