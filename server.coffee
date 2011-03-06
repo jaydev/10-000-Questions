@@ -87,14 +87,23 @@ server.get '/about', (req, res) ->
 #server.get '/dashboard', loadUser, (req, res) ->
 
 server.get '/flashcards', (req, res) ->
-  res.render 'layout',
-    locals:
-      title: 'Flashcards',
-      content: res.partial 'flashcards'
-        object: res.partial 'answer'
-        as: 'flashcard_content'
+  # Select a question at random
+  Question = models.Question
+  Question.count {}, (err, docs) ->
+    num_qs = docs
+    Question.find {}, (err, docs) ->
+      rand_int = Math.floor(Math.random() * num_qs)
+      question = docs[rand_int]
+      res.render 'layout',
+        locals:
+          title: 'Flashcards',
+          content: res.partial 'flashcards'
+            object: res.partial 'answer'
+              object: question
+              as: 'question'
+            as: 'flashcard_content'
 
-server.post '/flashcards', (req, res) ->
+server.post '/flashcards/next', (req, res) ->
   res.render 'rate',
     layout: false
 

@@ -74,8 +74,8 @@ mongoose.model 'Flashcard', Flashcard
 mongoose.model 'Answer', Answer
 mongoose.model 'Question', Question
 
-exports.User = User
-exports.Stack = Stack
-exports.Flashcard = Flashcard
-exports.Answer = Answer
-exports.Question = Question
+exports.User = mongoose.model('User')
+exports.Stack = mongoose.model('Stack')
+exports.Flashcard = mongoose.model('Flashcard')
+exports.Answer = mongoose.model('Answer')
+exports.Question = mongoose.model('Question')

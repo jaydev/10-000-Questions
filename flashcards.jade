@@ -2,7 +2,7 @@
   | $(function() {
   |     $('input#save').click(function() {
   |         $.post(
-  |             '/flashcards',
+  |             '/flashcards/next',
   |             {answer: $('#answer').val()},
   |             function(data) {
   |                 $('#actions').html(data);
