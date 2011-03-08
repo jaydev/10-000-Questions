@@ -7,8 +7,8 @@ fs = require 'fs'
 
 # Third party
 require.paths.push '/usr/local/lib/node'
+coffeekup = require 'coffeekup'
 express = require 'express'
-jade = require 'jade'
 mongoose = require 'mongoose'
 mongoStore = require 'connect-mongodb'
 
@@ -24,9 +24,10 @@ server = express.createServer()
 ## Configure server and middleware options
 
 server.configure ->
-  server.set 'views', __dirname
-  server.set 'partials', __dirname
-  server.set 'view engine', 'jade'
+  server.set 'views', __dirname + '/templates'
+  server.set 'partials', __dirname + '/templates'
+  server.register '.coffee', coffeekup
+  server.set 'view engine', 'coffee'
   server.use express.logger()
   # For parsing request bodies (form POSTs, etc.)
   server.use express.bodyDecoder()
@@ -43,7 +44,6 @@ server.configure 'development', ->
   server.use express.errorHandler
     dumpExceptions: true
     showStack: true
-
   # Connect to database `test`
   db_url = 'mongodb://localhost:27017/test'
   # Use MongoDB as a session store
@@ -74,7 +74,7 @@ loadUser = (req, res, next) ->
 
 server.get '/', (req, res) ->
   res.render 'layout',
-    locals:
+    context:
       title: 'Home'
       content: res.partial 'home'
 
