@@ -24,8 +24,8 @@ server = express.createServer()
 ## Configure server and middleware options
 
 server.configure ->
-  server.set 'views', __dirname
-  server.set 'partials', __dirname
+  server.set 'views', __dirname + '/templates'
+  server.set 'partials', __dirname + '/templates'
   server.set 'view engine', 'jade'
   server.use express.logger()
   # For parsing request bodies (form POSTs, etc.)
