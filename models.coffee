@@ -42,7 +42,7 @@ Stack = new mongoose.Schema
 ######################
 Flashcard = new mongoose.Schema
   # Foreign key to question
-  question: String
+  question_id: String
   # answers are embedded documents
   answers: [Answer]
 
@@ -74,8 +74,8 @@ mongoose.model 'Flashcard', Flashcard
 mongoose.model 'Answer', Answer
 mongoose.model 'Question', Question
 
-exports.User = mongoose.model('User')
-exports.Stack = mongoose.model('Stack')
-exports.Flashcard = mongoose.model('Flashcard')
-exports.Answer = mongoose.model('Answer')
-exports.Question = mongoose.model('Question')
+exports.User = mongoose.model 'User'
+exports.Stack = mongoose.model 'Stack'
+exports.Flashcard = mongoose.model 'Flashcard'
+exports.Answer = mongoose.model 'Answer'
+exports.Question = mongoose.model 'Question'
