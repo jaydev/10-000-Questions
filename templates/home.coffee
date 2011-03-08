@@ -4,8 +4,8 @@ h1 ->
   text 'Crush the test with the system we used to score 250+'
 div id: 'col-left', ->
   p style: 'font-size: 25px;', ->
-    'Flash cards organized and personally targeted to make ' +
-    'sure that you learn and retain every First Aid fact most efficiently.'
+    text 'Flash cards organized and personally targeted to make '
+    text 'sure that you learn and retain every First Aid fact most efficiently.'
   div style: 'margin: 5px 0px;', ->
   p style: 'font-size: 12px;', ->
     a href: '/science', -> 'More about our system'
