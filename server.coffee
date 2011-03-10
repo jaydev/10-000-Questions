@@ -7,12 +7,14 @@ fs = require 'fs'
 
 # Third party
 require.paths.push '/usr/local/lib/node'
+coffeekup = require 'coffeekup'
 express = require 'express'
-jade = require 'jade'
 mongoose = require 'mongoose'
 mongoStore = require 'connect-mongodb'
 
+# Local
 models = require './models'
+partials = require './templates/partials'
 
 # Globals
 HOST = 'localhost'
@@ -26,7 +28,8 @@ server = express.createServer()
 server.configure ->
   server.set 'views', __dirname + '/templates'
   server.set 'partials', __dirname + '/templates'
-  server.set 'view engine', 'jade'
+  server.register '.coffee', coffeekup
+  server.set 'view engine', 'coffee'
   server.use express.logger()
   # For parsing request bodies (form POSTs, etc.)
   server.use express.bodyDecoder()
@@ -43,7 +46,6 @@ server.configure 'development', ->
   server.use express.errorHandler
     dumpExceptions: true
     showStack: true
-
   # Connect to database `test`
   db_url = 'mongodb://localhost:27017/test'
   # Use MongoDB as a session store
@@ -74,15 +76,15 @@ loadUser = (req, res, next) ->
 
 server.get '/', (req, res) ->
   res.render 'layout',
-    locals:
+    context:
       title: 'Home'
-      content: res.partial 'home'
+      content: coffeekup.render partials.home
 
 server.get '/about', (req, res) ->
   res.render 'layout',
-    locals:
+    context:
       title: 'About',
-      content: res.partial 'about'
+      content: coffeekup.render partials.about
 
 #server.get '/dashboard', loadUser, (req, res) ->
 
@@ -95,17 +97,20 @@ server.get '/flashcards', (req, res) ->
       rand_int = Math.floor(Math.random() * num_qs)
       question = docs[rand_int]
       res.render 'layout',
-        locals:
+        context:
           title: 'Flashcards',
-          content: res.partial 'flashcards'
-            object: res.partial 'answer'
-              object: question
-              as: 'question'
-            as: 'flashcard_content'
+          content: coffeekup.render(
+            partials.flashcards,
+            context:
+              flashcard_content: coffeekup.render(
+                partials.answer,
+                context:
+                  question: question
+              )
+          )
 
 server.post '/flashcards/next', (req, res) ->
-  res.render 'rate',
-    layout: false
+  res.send coffeekup.render partials.rate
 
 ## Start the server
 
