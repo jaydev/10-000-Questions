@@ -12,7 +12,9 @@ express = require 'express'
 mongoose = require 'mongoose'
 mongoStore = require 'connect-mongodb'
 
+# Local
 models = require './models'
+partials = require './templates/partials'
 
 # Globals
 HOST = 'localhost'
@@ -76,13 +78,13 @@ server.get '/', (req, res) ->
   res.render 'layout',
     context:
       title: 'Home'
-      content: res.partial 'home'
+      content: coffeekup.render partials.home
 
 server.get '/about', (req, res) ->
   res.render 'layout',
-    locals:
+    context:
       title: 'About',
-      content: res.partial 'about'
+      content: coffeekup.render partials.about
 
 #server.get '/dashboard', loadUser, (req, res) ->
 
@@ -95,17 +97,20 @@ server.get '/flashcards', (req, res) ->
       rand_int = Math.floor(Math.random() * num_qs)
       question = docs[rand_int]
       res.render 'layout',
-        locals:
+        context:
           title: 'Flashcards',
-          content: res.partial 'flashcards'
-            object: res.partial 'answer'
-              object: question
-              as: 'question'
-            as: 'flashcard_content'
+          content: coffeekup.render(
+            partials.flashcards,
+            context:
+              flashcard_content: coffeekup.render(
+                partials.answer,
+                context:
+                  question: question
+              )
+          )
 
 server.post '/flashcards/next', (req, res) ->
-  res.render 'rate',
-    layout: false
+  res.send coffeekup.render partials.rate
 
 ## Start the server
 
