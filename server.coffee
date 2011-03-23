@@ -32,13 +32,13 @@ server.configure ->
   server.set 'view engine', 'coffee'
   server.use express.logger()
   # For parsing request bodies (form POSTs, etc.)
-  server.use express.bodyDecoder()
+  server.use express.bodyParser()
   # These must come after bodyDecoder and before methodOverride
-  server.use express.cookieDecoder()
+  server.use express.cookieParser()
   # Must come after bodyDecoder
   server.use express.methodOverride()
   # Static media directory
-  server.use express.staticProvider __dirname
+  server.use express.static __dirname
   server.use server.router
 
 server.configure 'development', ->
