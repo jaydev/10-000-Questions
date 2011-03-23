@@ -21,6 +21,9 @@ HOST = 'localhost'
 PORT = '8080'
 SITE_ROOT = process.cwd() + '/'
 
+Question = models.Question
+User = models.User
+
 server = express.createServer()
 
 ## Configure server and middleware options
@@ -72,6 +75,14 @@ loadUser = (req, res, next) ->
   else
       res.redirect '/sessions/new'
 
+getOrCreateUser = (fn) ->
+  User.findOne {}, (err, user) ->
+    if not user
+      user = new User()
+      user.save()
+      user.createStacks(user)
+    fn user
+
 ## Routes
 
 server.get '/', (req, res) ->
@@ -89,13 +100,9 @@ server.get '/about', (req, res) ->
 #server.get '/dashboard', loadUser, (req, res) ->
 
 server.get '/flashcards', (req, res) ->
-  # Select a question at random
-  Question = models.Question
-  Question.count {}, (err, docs) ->
-    num_qs = docs
-    Question.find {}, (err, docs) ->
-      rand_int = Math.floor(Math.random() * num_qs)
-      question = docs[rand_int]
+  getOrCreateUser (user) ->
+    card = user.stacks[0].flashcards[1]
+    Question.findOne {'_id': card.question_id}, (err, question) ->
       res.render 'layout',
         context:
           title: 'Flashcards',

@@ -1,9 +1,11 @@
 mongoose = require 'mongoose'
 
+Schema = mongoose.Schema
+
 ######################
 # User
 ######################
-User = new mongoose.Schema
+UserSchema = new Schema
   email:
     type: String
     unique: true
@@ -12,48 +14,61 @@ User = new mongoose.Schema
     type: String
     set: this.encryptPassword
   salt: String
-  orders: [Order]
-  stacks: [Stack]
+  orders: [OrderSchema]
+  stacks: [StackSchema]
 
-User.method 'toLower', (email) ->
+UserSchema.method 'toLower', (email) ->
   return email.toLowerCase()
 
-User.method 'authenticate', (plainText) ->
+UserSchema.method 'authenticate', (plainText) ->
   return this.encryptPassword(plainText) is this.hashed_password
 
-User.method 'makeSalt', ->
+UserSchema.method 'makeSalt', ->
   return Math.round(new Date().valueOf() * Math.random()) + ''
 
-User.method 'encryptPassword', (password) ->
+UserSchema.method 'encryptPassword', (password) ->
   return crypto.createHmac('sha1', this.salt).update(password).digest('hex')
+
+UserSchema.method 'createStacks', (user) ->
+  Question.find {}, (err, questions) ->
+    stack = new Stack
+      position: 1
+    stack.save()
+    card_pos = 1
+    for question in questions
+      stack.flashcards.push
+        position: card_pos,
+        question_id: question._id
+      card_pos += 1
+    user.stacks.push stack
+    user.save()
 
 ######################
 # Order
 ######################
-Order = new mongoose.Schema
+OrderSchema = new Schema
   product: String
   created_on: Date
 
 ######################
 # Stack
 ######################
-Stack = new mongoose.Schema
-  # order in which to show stacks
+StackSchema = new Schema
   position: Number
-  flashcards: [Flashcard]
+  flashcards: [FlashcardSchema]
 
 ######################
 # Flashcard
 ######################
-Flashcard = new mongoose.Schema
+FlashcardSchema = new Schema
   position: Number
-  question_id: String
-  answers: [Answer]
+  question_id: Schema.ObjectId
+  answers: [AnswerSchema]
 
 ######################
 # Answer
 ######################
-Answer = new mongoose.Schema
+AnswerSchema = new Schema
   created_on: Date
   # how the user rated his response
   rating: Number
@@ -63,7 +78,7 @@ Answer = new mongoose.Schema
 ######################
 # Question
 ######################
-Question = new mongoose.Schema
+QuestionSchema = new Schema
   # question text
   question: String
   # type could be free response or matching
@@ -73,16 +88,16 @@ Question = new mongoose.Schema
   # medical topic area
   topic: String
 
-mongoose.model 'User', User
-mongoose.model 'Order', Order
-mongoose.model 'Stack', Stack
-mongoose.model 'Flashcard', Flashcard
-mongoose.model 'Answer', Answer
-mongoose.model 'Question', Question
+mongoose.model 'User', UserSchema
+mongoose.model 'Order', OrderSchema
+mongoose.model 'Stack', StackSchema
+mongoose.model 'Flashcard', FlashcardSchema
+mongoose.model 'Answer', AnswerSchema
+mongoose.model 'Question', QuestionSchema
 
-exports.User = mongoose.model 'User'
-exports.Order = mongoose.model 'Order'
-exports.Stack = mongoose.model 'Stack'
-exports.Flashcard = mongoose.model 'Flashcard'
-exports.Answer = mongoose.model 'Answer'
-exports.Question = mongoose.model 'Question'
+exports.User = User = mongoose.model 'User'
+exports.Order = Order = mongoose.model 'Order'
+exports.Stack = Stack = mongoose.model 'Stack'
+exports.Flashcard = Flashcard = mongoose.model 'Flashcard'
+exports.Answer = Answer = mongoose.model 'Answer'
+exports.Question = Question = mongoose.model 'Question'
