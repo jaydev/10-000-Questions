@@ -44,12 +44,13 @@ flashcards = ->
 
 answer = ->
   form action: '', method: 'post', id: 'answer-form', ->
-    text @question.question
-    span style: 'font-size: 11px;', -> " (pg. #{@question.page_number})"
+    text @card.question
+    span style: 'font-size: 11px;', -> " (pg. #{@card.page_number})"
     br ->
     textarea rows: '10', cols: '50', id: 'answer', name: 'answer', ->
     br ->
     input type: 'submit', name: 'save', id: 'save', value: 'Save Answer', ->
+
 
 rate = ->
   form id: 'rating-form', ->

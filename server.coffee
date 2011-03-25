@@ -6,7 +6,6 @@ path = require 'path'
 fs = require 'fs'
 
 # Third party
-require.paths.push '/usr/local/lib/node'
 coffeekup = require 'coffeekup'
 express = require 'express'
 mongoose = require 'mongoose'
@@ -21,7 +20,8 @@ HOST = 'localhost'
 PORT = '8080'
 SITE_ROOT = process.cwd() + '/'
 
-Question = models.Question
+Answer = models.Answer
+Flashcard = models.Flashcard
 User = models.User
 
 server = express.createServer()
@@ -75,13 +75,18 @@ loadUser = (req, res, next) ->
   else
       res.redirect '/sessions/new'
 
-getOrCreateUser = (fn) ->
+getOrCreateUser = (req, res, next) ->
   User.findOne {}, (err, user) ->
     if not user
-      user = new User()
+      user = new User
+        email: 'jaydevm@gmail.com'
       user.save()
-      user.createStacks(user)
-    fn user
+      user.createStacks user, (user) ->
+        req.currentUser = user
+        next()
+    else
+      req.currentUser = user
+      next()
 
 ## Routes
 
@@ -99,25 +104,31 @@ server.get '/about', (req, res) ->
 
 #server.get '/dashboard', loadUser, (req, res) ->
 
-server.get '/flashcards', (req, res) ->
-  getOrCreateUser (user) ->
-    card = user.stacks[0].flashcards[1]
-    Question.findOne {'_id': card.question_id}, (err, question) ->
-      res.render 'layout',
-        context:
-          title: 'Flashcards',
-          content: coffeekup.render(
-            partials.flashcards,
-            context:
-              flashcard_content: coffeekup.render(
-                partials.answer,
-                context:
-                  question: question
-              )
-          )
+server.get '/flashcards', getOrCreateUser, (req, res) ->
+  user = req.currentUser
+  user.getCurrentFlashcard user, (card) ->
+    res.render 'layout',
+      context:
+        title: 'Flashcards',
+        content: coffeekup.render(
+          partials.flashcards,
+          context:
+            flashcard_content: coffeekup.render(
+              partials.answer,
+              context:
+                card: card
+            )
+        )
 
-server.post '/flashcards/next', (req, res) ->
-  res.send coffeekup.render partials.rate
+server.post '/flashcards/next', getOrCreateUser, (req, res) ->
+  user = req.currentUser
+  user.getCurrentFlashcard user, (card) ->
+    card.answers = new Array()
+    answer = new Answer
+      answer: req.body.answer
+    card.answers.push answer
+    card.save()
+    res.send coffeekup.render partials.rate
 
 ## Start the server
 
