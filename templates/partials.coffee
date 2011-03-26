@@ -55,13 +55,13 @@ answer = ->
 rate = ->
   form id: 'rating-form', ->
     input type: 'radio', name: 'rating', value: '1', ->
-    text 'Nailed it!'
+    text ' Nailed it!'
     br ->
     input type: 'radio', name: 'rating', value: '2', ->
-    text 'I kinda knew the answer.'
+    text ' I kinda knew the answer.'
     br ->
     input type: 'radio', name: 'rating', value: '3'
-    text 'I need to review this question again.'
+    text ' I need to review this question again.'
     br ->
     input type: 'submit', name: 'save', id: 'save', value: 'Next Question', ->
 
