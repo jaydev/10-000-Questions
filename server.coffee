@@ -11,16 +11,18 @@ express = require 'express'
 mongoose = require 'mongoose'
 mongoStore = require 'connect-mongodb'
 
-# App
-Answer = require('./models').Answer
-Flashcard = require('./models').Flashcard
-User = require('./models').User
+# Local
+models = require './models'
 partials = require './templates/partials'
 
 # Globals
 HOST = 'localhost'
 PORT = '8080'
 SITE_ROOT = process.cwd() + '/'
+
+Answer = models.Answer
+Flashcard = models.Flashcard
+User = models.User
 
 server = express.createServer()
 
@@ -111,49 +113,22 @@ server.get '/flashcards', getOrCreateUser, (req, res) ->
         content: coffeekup.render(
           partials.flashcards,
           context:
-            content: coffeekup.render(
+            flashcard_content: coffeekup.render(
               partials.answer,
               context:
                 card: card
             )
         )
 
-server.get '/flashcards/rate', getOrCreateUser, (req, res) ->
-  res.send coffeekup.render partials.rate
-
-server.post '/flashcards', getOrCreateUser, (req, res) ->
+server.post '/flashcards/next', getOrCreateUser, (req, res) ->
   user = req.currentUser
   user.getCurrentFlashcard user, (card) ->
-    if req.body.answer
-      # Create a new Answer
-      if not card.answers
-        card.answers = new Array()
-      answer = new Answer
-        answer: req.body.answer
-        rating: req.body.rating
-      card.answers.push answer
-      card.save()
-      res.send coffeekup.render partials.rate
-    else if req.body.rating
-      # Add a rating to the last submitted Answer
-      # num_answers = card.answers.length
-      # # last_answer = card.answers[num_answers-1]
-      # # last_answer.rating = req.body.rating
-      # card.answers[num_answers-1].remove()
-      # card.save()
-      user.getNextFlashcard user, (card) ->
-        res.render 'layout',
-          context:
-            title: 'Flashcards',
-            content: coffeekup.render(
-              partials.flashcards,
-              context:
-                content: coffeekup.render(
-                  partials.answer,
-                  context:
-                    card: card
-                )
-            )
+    card.answers = new Array()
+    answer = new Answer
+      answer: req.body.answer
+    card.answers.push answer
+    card.save()
+    res.send coffeekup.render partials.rate
 
 ## Start the server
 

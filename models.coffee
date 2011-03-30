@@ -72,21 +72,6 @@ UserSchema.method 'getCurrentFlashcard', (user, fn) ->
   Flashcard.findOne filter_params, (err, card) ->
     fn card
 
-UserSchema.method 'getNextFlashcard', (user, fn) ->
-  user.card_number += 1
-  user.save()
-  user.getCurrentFlashcard user, (card) ->
-    if card
-      fn card
-    else
-      # If we can't find a card we have reached the last card in this stack.
-      # Return the first card in the next stack.
-      user.stack_number += 1
-      user.card_number = 0
-      user.save()
-      user.getCurrentFlashcard user, (card) ->
-        fn card
-
 ######################
 # Order
 ######################
