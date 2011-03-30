@@ -32,14 +32,24 @@ flashcards = ->
     $ ->
       $('input#save').click ->
         $.post(
-          '/flashcards/next',
-          {answer: $('#answer').val()},
+          '/flashcards',
+          $('form').serialize(),
+          (data) ->
+            $('#answer').attr 'disabled', 'disabled'
+            $('input#save').attr('disabled', 'disabled').attr('value', 'Finalized')
+            $('form').append data
+        )
+        return false
+      $('input#next').click ->
+        $.post(
+          '/flashcards',
+          $('form').serialize(),
           (data) ->
             $('#actions').html data
         )
         return false
   h1 -> 'Flashcards'
-  div id: 'actions', -> @flashcard_content
+  div id: 'actions', -> @content
 
 
 answer = ->
@@ -49,21 +59,21 @@ answer = ->
     br ->
     textarea rows: '10', cols: '50', id: 'answer', name: 'answer', ->
     br ->
-    input type: 'submit', name: 'save', id: 'save', value: 'Save Answer', ->
+    input type: 'submit', name: 'save', id: 'save', value: 'Finalize Answer', ->
 
 
 rate = ->
-  form id: 'rating-form', ->
-    input type: 'radio', name: 'rating', value: '1', ->
-    text ' Nailed it!'
-    br ->
-    input type: 'radio', name: 'rating', value: '2', ->
-    text ' I kinda knew the answer.'
-    br ->
-    input type: 'radio', name: 'rating', value: '3'
-    text ' I need to review this question again.'
-    br ->
-    input type: 'submit', name: 'save', id: 'save', value: 'Next Question', ->
+  br ->
+  input type: 'radio', name: 'rating', value: '1', ->
+  text ' Nailed it!'
+  br ->
+  input type: 'radio', name: 'rating', value: '2', ->
+  text ' I kinda knew the answer.'
+  br ->
+  input type: 'radio', name: 'rating', value: '3'
+  text ' I need to review this question again.'
+  br ->
+  input type: 'submit', name: 'next', id: 'next', value: 'Next Question', ->
 
 
 exports.home = home
