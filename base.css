@@ -13,13 +13,9 @@ body {
     background: -webkit-gradient(linear, left top, left bottom, from(#C6D8DA), to(#FFFFFF));
     background: -moz-linear-gradient(top, #C6D8DA, #FFFFFF);
     background-repeat: no-repeat;
-/*    background-image: url("bkgd_color.jpg"); */
-/*   background-repeat: repeat-x; */
-/*    background: #C6D8DA; */
 }
 
 h1 {
-/*    color: #8F3C00;  Original red color*/
     font-family: dad_hand;
     color: #C5AD93;
     margin: 30px 0px;
@@ -40,8 +36,6 @@ ul, li {
     padding: 10px;
     height: 100px;
     margin: 10px 0px 5px 0px;
-/*    background: #C6D8DA; */
-/*    background: #DFE6F0; */
 }
 #logo {
     float: left;
@@ -56,6 +50,11 @@ ul, li {
 }
 #content {
     float: left;
+}
+#actions{
+    float: left;
+    width: 460px;
+    height: 150px;
 }
 #col-left {
     float: left;
