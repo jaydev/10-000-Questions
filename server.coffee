@@ -11,18 +11,16 @@ express = require 'express'
 mongoose = require 'mongoose'
 mongoStore = require 'connect-mongodb'
 
-# Local
-models = require './models'
+# App
+Answer = require('./models').Answer
+Flashcard = require('./models').Flashcard
+User = require('./models').User
 partials = require './templates/partials'
 
 # Globals
 HOST = 'localhost'
 PORT = '8080'
 SITE_ROOT = process.cwd() + '/'
-
-Answer = models.Answer
-Flashcard = models.Flashcard
-User = models.User
 
 server = express.createServer()
 
@@ -113,22 +111,48 @@ server.get '/flashcards', getOrCreateUser, (req, res) ->
         content: coffeekup.render(
           partials.flashcards,
           context:
-            flashcard_content: coffeekup.render(
+            content: coffeekup.render(
               partials.answer,
               context:
                 card: card
             )
         )
 
-server.post '/flashcards/next', getOrCreateUser, (req, res) ->
+server.get '/flashcards/rate', getOrCreateUser, (req, res) ->
+  res.send coffeekup.render partials.rate
+
+server.post '/flashcards', getOrCreateUser, (req, res) ->
   user = req.currentUser
   user.getCurrentFlashcard user, (card) ->
-    card.answers = new Array()
-    answer = new Answer
-      answer: req.body.answer
-    card.answers.push answer
-    card.save()
-    res.send coffeekup.render partials.rate
+    if req.body.answer
+      # Create a new Answer
+      if not card.answers
+        card.answers = new Array()
+      answer = new Answer
+        answer: req.body.answer
+        rating: req.body.rating
+      card.answers.push answer
+      card.save()
+      res.send coffeekup.render partials.rate
+    else if req.body.rating
+      # Add a rating to the last submitted Answer
+      # Doesn't work due to atomic save issue with mongoose
+      num_answers = card.answers.length
+      card.answers[num_answers-1].rating = req.body.rating
+      card.save()
+      user.getNextFlashcard user, (card) ->
+        res.render 'layout',
+          context:
+            title: 'Flashcards',
+            content: coffeekup.render(
+              partials.flashcards,
+              context:
+                content: coffeekup.render(
+                  partials.answer,
+                  context:
+                    card: card
+                )
+            )
 
 ## Start the server
 
