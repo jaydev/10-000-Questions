@@ -1,0 +1,86 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+@font-face{
+    font-family: dad_hand;
+    src: url("dad_hand.ttf");
+}
+
+body {
+    font-family: Verdana, Ariel, sans-serif;
+    background: -webkit-gradient(linear, left top, left bottom, from(#C6D8DA), to(#FFFFFF));
+    background: -moz-linear-gradient(top, #C6D8DA, #FFFFFF);
+    background-repeat: no-repeat;
+}
+
+h1 {
+    font-family: dad_hand;
+    color: #C5AD93;
+    margin: 30px 0px;
+    font-size: 72px;
+
+}
+ul, li {
+    margin: 5px 0px;
+    list-style-type: none;
+}
+#wrapper {
+    margin: 0 auto;
+    width: 922px;
+}
+#header {
+    float: left;
+    width: 900px;
+    padding: 10px;
+    height: 100px;
+    margin: 10px 0px 5px 0px;
+}
+#logo {
+    float: left;
+    width: 770px;
+    color: #332210;
+}
+#login {
+    float: right;
+    width: 130px;
+    display: inline;
+    color: #332210;
+}
+#content {
+    float: left;
+}
+#actions{
+    float: left;
+    width: 460px;
+    height: 150px;
+}
+#col-left {
+    float: left;
+    margin: 0px 5px 5px 0px;
+    padding: 10px;
+    height: 350px;
+    width: 678px;
+}
+#col-right {
+    float: right;
+    margin: 0px 0px 5px 0px;
+    padding: 10px;
+    height: 350px;
+    width: 195px;
+    display: inline;
+}
+#footer {
+    width: 900px;
+    clear: both;
+    color: #333;
+    margin: 0px 0px 10px 0px;
+    padding: 10px;
+    text-align: center;
+    font-size: 11px;
+}
+#footer > a {
+    margin-left: 5px;
+    margin-right: 5px;
+}

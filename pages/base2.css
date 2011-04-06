@@ -1,0 +1,74 @@
+/* The * is the universal style selector */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+@font-face{
+    font-family: dad_hand;
+    src: url("fonts/dad_hand.tff");
+}
+
+h2{
+    border: double;
+    border-width: 0px 0px 3px 0px;
+    color: #332210;
+    /* font-family: Bodoni SvtyTwo ITC TT; */
+    font-family: dad_hand;
+    font-size: 48px;
+}
+
+h3 {
+    font-family: dad_hand;
+    color: #332210;
+    /* color: #C5AD93; */
+    margin: 12px 0px;
+    font-size: 18px;
+}
+
+body {
+    background: -webkit-gradient(linear, left top, left bottom, from(#C6D8DA), to(#FFFFFF));
+    background: -moz-linear-gradient(top, #C6D8DA, #FFFFFF);
+    background-repeat: no-repeat;
+}
+
+#header {
+    float: left;
+    width: 900px;
+    padding: 10px;
+    height: 60px;
+    margin: 80px 0px 0px 0px;
+}
+
+
+#col-left{
+    padding: 10px;
+}
+
+a{
+display: block;
+text-decoration: none;
+margin: 10px;
+padding: 5px;
+width: 200px;
+}
+
+a:link{
+color: #332210;
+font-size: 26px;
+}
+
+a:hover{
+background-color: #332210;
+font-color: #FFFFFF
+}
+
+a:visited{
+color: #332210;
+}
+
+/* #mid{ */
+/* float: left; */
+/* width: 900px; */
+/* height: 800px; */
+/* } */
